@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="shiporder" type="shiporderType"/>
+  <xs:complexType name="shiptoType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="name"/>
+      <xs:element type="xs:string" name="address"/>
+      <xs:element type="xs:string" name="city"/>
+      <xs:element type="xs:string" name="country"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="itemType">
+    <xs:sequence>
+      <xs:element name="title">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Empire Burlesque"/>
+            <xs:enumeration value="Hide your heart"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element type="xs:string" name="note" minOccurs="0"/>
+      <xs:element type="xs:string" name="quantity"/>
+      <xs:element name="price">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="10.90"/>
+            <xs:enumeration value="9.90"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="shiporderType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="orderperson"/>
+      <xs:element type="shiptoType" name="shipto"/>
+      <xs:element type="itemType" name="item" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="orderid"/>
+  </xs:complexType>
+</xs:schema>
