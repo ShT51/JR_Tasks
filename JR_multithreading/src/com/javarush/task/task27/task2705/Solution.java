@@ -21,9 +21,15 @@ public class Solution {
     }
 
     private void doSomething() {
+        System.out.println("Some important work: " + Thread.currentThread().getName());
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
+        final Solution ob = new Solution();
 
+        for (int i = 0; i < 10; i++) {
+            new Thread(ob::firstMethod).start();
+            new Thread(ob::secondMethod).start();
+        }
     }
 }

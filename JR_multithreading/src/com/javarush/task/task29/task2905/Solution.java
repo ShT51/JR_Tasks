@@ -12,13 +12,37 @@ import java.util.logging.Logger;
 Странные ошибки О_о
 */
 public class Solution {
-    final int NUMBER_OF_THREADS = 3; // 3 треда будет обрабатывать нашу очередь
-    final int MAX_BATCH_SIZE = 100; // Будем вытаскивать по 100 сообщений
+    private final static int NUMBER_OF_THREADS = 3; // 3 треда будет обрабатывать нашу очередь
+    private final static int MAX_BATCH_SIZE = 100; // Будем вытаскивать по 100 сообщений
 
-    private Logger logger = Logger.getLogger(Solution.class.getName());
-    private BlockingQueue messageQueue = new LinkedBlockingQueue(); // Тут будут храниться все сообщения
+    private final Logger logger = Logger.getLogger(Solution.class.getName());
+    // Имитация Брокера
+    private final BlockingQueue<String> messageQueue = new LinkedBlockingQueue<>();
+    // Имитация БД
+    private final BlockingQueue<String> fakeDatabase = new LinkedBlockingQueue<>();
 
-    private BlockingQueue fakeDatabase = new LinkedBlockingQueue();
+    public void startCreatingMessages() {
+        new Thread(() -> {
+            for (int i = 0; i < 1000000; i++) {
+                AtomicInteger j = new AtomicInteger(i);
+                messageQueue.add(String.valueOf(j.decrementAndGet()));
+            }
+        }).start();
+    }
+
+    public void startPersistingMessages() {
+        for (int i = 0; i < NUMBER_OF_THREADS; i++) {
+            var task = new Task();
+            task.setDaemon(true);
+            task.start();
+        }
+    }
+
+    private void printResults() {
+        System.out.println();
+        System.out.println("messageQueue size is " + messageQueue.size());
+        System.out.println("fakeDatabase size is " + fakeDatabase.size());
+    }
 
     public static void main(String[] args) throws InterruptedException {
         // Статики во многих местах неуместны, поэтому помещаем все данные в поля класса,
@@ -28,66 +52,35 @@ public class Solution {
         solution.startCreatingMessages();
         solution.startPersistingMessages();
 
-        Thread.sleep(100);
-        solution.printResults();
-
-        Thread.sleep(100);
-        solution.printResults();
-
-        Thread.sleep(100);
-        solution.printResults();
-
+        for (int i = 1; i < 15; i++) {
+            Thread.sleep(100L * i);
+            solution.printResults();
+        }
         Thread.sleep(500);
         solution.printResults();
     }
 
-    public void startCreatingMessages() {
-        new Thread() {
-            @Override
-            public void run() {
-                for (int i = 0; i < 100000; i++) {
-                    AtomicInteger j = new AtomicInteger(i);
-                    messageQueue.add(String.valueOf(j.decrementAndGet()));
+    class Task extends Thread {
+        private final Collection<String> batch = new ArrayList<>(MAX_BATCH_SIZE);
+
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    messageQueue.drainTo(batch, MAX_BATCH_SIZE);
+                    persistData(batch);
+                    batch.clear();
+                    Thread.sleep(1);
+                } catch (Throwable e) {
+                    logger.log(Level.SEVERE, "impossible to persist a batch", e);
                 }
             }
-        }.start();
-    }
-
-    public void startPersistingMessages() {
-        for (int i = 0; i < NUMBER_OF_THREADS; i++) {
-            new Thread() {
-                private final Collection batch = new ArrayList(MAX_BATCH_SIZE);
-
-                {
-                    setDaemon(true);
-                }
-
-                @Override
-                public void run() {
-                    while (true) {
-                        try {
-                            messageQueue.drainTo(batch, MAX_BATCH_SIZE);
-                            persistData(batch);
-                            batch.clear();
-                            Thread.sleep(1);
-                        } catch (Throwable e) {
-                            logger.log(Level.SEVERE, "impossible to persist a batch", e);
-                        }
-                    }
-                }
-            }.start();
         }
-    }
 
-    private void persistData(Collection batch) {
-        // Представим, что тут мы коннектимся к базе данных, и сохраняем данные в нее
-        // Сохранение данных по 1 записи тратит много ресурсов, поэтому делают батчем (группой по несколько)
-        fakeDatabase.addAll(batch);
-    }
-
-    private void printResults() {
-        System.out.println();
-        System.out.println("messageQueue size is " + messageQueue.size());
-        System.out.println("fakeDatabase size is " + fakeDatabase.size());
+        private void persistData(Collection<String> batch) {
+            // Представим, что тут мы коннектимся к базе данных, и сохраняем данные в нее
+            // Сохранение данных по 1 записи тратит много ресурсов, поэтому делают батчем (группой по несколько)
+            fakeDatabase.addAll(batch);
+        }
     }
 }

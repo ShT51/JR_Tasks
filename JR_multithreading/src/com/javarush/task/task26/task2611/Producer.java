@@ -1,12 +1,12 @@
 package com.javarush.task.task26.task2611;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map;
 
 public class Producer implements Runnable {
 
-    private ConcurrentHashMap<String, String> map;
+    private final Map<String, String> map;
 
-    public Producer(ConcurrentHashMap<String, String> map) {
+    public Producer(Map<String, String> map) {
         this.map = map;
     }
 
@@ -20,7 +20,7 @@ public class Producer implements Runnable {
                 Thread.sleep(500);
             }
         } catch (InterruptedException e) {
-            System.out.println(String.format("[%s] thread was terminated", Thread.currentThread().getName()));
+            System.out.printf("[%s] thread was terminated%n", Thread.currentThread().getName());
         }
     }
 }

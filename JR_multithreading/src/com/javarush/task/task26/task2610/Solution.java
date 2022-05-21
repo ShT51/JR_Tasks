@@ -12,7 +12,7 @@ public class Solution {
 
     public static void main(String[] args) throws Exception {
 
-        BlockingQueue queue = new ArrayBlockingQueue(32);
+        BlockingQueue<String> queue = new ArrayBlockingQueue<>(32);
 
         Producer producer = new Producer(queue);
         Consumer consumer = new Consumer(queue);

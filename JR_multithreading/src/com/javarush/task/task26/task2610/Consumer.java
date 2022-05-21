@@ -3,9 +3,9 @@ package com.javarush.task.task26.task2610;
 import java.util.concurrent.BlockingQueue;
 
 public class Consumer implements Runnable {
-    private BlockingQueue queue;
+    private final BlockingQueue<String> queue;
 
-    public Consumer(BlockingQueue queue) {
+    public Consumer(BlockingQueue<String> queue) {
         this.queue = queue;
     }
 
@@ -17,7 +17,7 @@ public class Consumer implements Runnable {
                 System.out.println(result.toString());
             }
         } catch (InterruptedException e) {
-            System.out.println(String.format("[%s] thread was terminated", Thread.currentThread().getName()));
+            System.out.printf("[%s] thread was terminated%n", Thread.currentThread().getName());
         }
     }
 }

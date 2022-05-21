@@ -7,7 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
 Весь мир играет комедию
 */
 public class Solution {
-    private Lock lock = new ReentrantLock();
+    private final Lock lock = new ReentrantLock();
 
     public void someMethod() {
         // Implement the logic here. Use the lock field

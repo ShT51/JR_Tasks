@@ -13,12 +13,7 @@ public class Solution {
         LinkedBlockingQueue<Runnable> blockingQueue = new LinkedBlockingQueue<>();
         for (int i = 1; i < 11; i++) {
             final int id = i;
-            blockingQueue.add(new Runnable() {
-                @Override
-                public void run() {
-                    doExpensiveOperation(id);
-                }
-            });
+            blockingQueue.add(() -> doExpensiveOperation(id));
         }
         ThreadPoolExecutor executor = new ThreadPoolExecutor(3, 5,
                 1000, TimeUnit.MILLISECONDS, blockingQueue);

@@ -1,5 +1,6 @@
 package com.javarush.task.task26.task2611;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -9,7 +10,7 @@ import java.util.concurrent.Executors;
 */
 public class Solution {
     public static void main(String[] args) throws Exception {
-        ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
+        Map<String, String> map = new ConcurrentHashMap<>();
 
         Producer producer = new Producer(map);
         Consumer consumer = new Consumer(map);
@@ -18,7 +19,7 @@ public class Solution {
         executorService.submit(producer);
         executorService.submit(consumer);
 
-        Thread.sleep(2000);
+        Thread.sleep(2500);
 
         executorService.shutdownNow();
         //finally 5 lines have to be printed
